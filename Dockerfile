@@ -104,8 +104,9 @@ ENV PYTHONPATH="$PYTHONPATH:/usr/src/app"
 # Install Macaw.
 RUN python3 setup.py install
 
+# Create index
 RUN mkdir tantivy_index/
-# RUN python3 macaw/build_tanvity_index.py --index_path tantivy_index/ --document_path trec_documents/
+RUN python3 macaw/build_tanvity_index.py --index_path tantivy_index/ --document_path trec_documents/
 
 # Run the script that will start MongoDB and run python application.
 CMD ["/bin/bash", "scripts/start.sh"]

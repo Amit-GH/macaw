@@ -12,7 +12,8 @@ def get_trec_docs(documents_path: str) -> List[str]:
     doc_list = []
     for trec_files in os.listdir(documents_path):
         with open(os.path.join(documents_path, trec_files), 'r') as fobj:
-            doc_list.append(get_trec_doc(fobj.read()))
+            trec_txt = fobj.read()
+            doc_list.append(get_trec_doc(trec_txt))
     return doc_list
 
 
