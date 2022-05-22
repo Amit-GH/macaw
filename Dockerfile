@@ -20,15 +20,15 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Download Indri search engine for document retrieval.
-RUN wget --no-check-certificate https://sourceforge.net/projects/lemur/files/lemur/indri-5.11/indri-5.11.tar.gz \
-    && tar -xvzf indri-5.11.tar.gz \
-    && rm indri-5.11.tar.gz
+#RUN wget --no-check-certificate https://sourceforge.net/projects/lemur/files/lemur/indri-5.11/indri-5.11.tar.gz \
+#    && tar -xvzf indri-5.11.tar.gz \
+#    && rm indri-5.11.tar.gz
 
 # Install Indri.
-RUN cd indri-5.11 \
-    && ./configure CXX="g++ -D_GLIBCXX_USE_CXX11_ABI=0" \
-    && make \
-    && make install
+#RUN cd indri-5.11 \
+#    && ./configure CXX="g++ -D_GLIBCXX_USE_CXX11_ABI=0" \
+#    && make \
+#    && make install
 
 # Install python 3.6 because 3.5 version is not compatible with new certifi changes. Gives error at runtime.
 # https://github.com/certifi/python-certifi/issues/195
@@ -36,9 +36,9 @@ RUN cd indri-5.11 \
 RUN apt-get update && apt-get install -y \
     build-essential checkinstall \
     libreadline-gplv2-dev libncursesw5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev libffi-dev
-RUN wget "https://www.python.org/ftp/python/3.6.3/Python-3.6.3.tgz" \
-    && tar -xvf Python-3.6.3.tgz \
-    && cd Python-3.6.3 \
+RUN wget "https://www.python.org/ftp/python/3.7.9/Python-3.7.9.tgz" \
+    && tar -xvf Python-3.7.9.tgz \
+    && cd Python-3.7.9 \
     && ./configure \
     && make \
     && make install
@@ -48,7 +48,7 @@ RUN wget "https://www.python.org/ftp/python/3.6.3/Python-3.6.3.tgz" \
 RUN apt-get update && apt-get install -y python3-pip \
     && pip3 install --upgrade "pip < 21.0"
 
-RUN pip3 install pyndri
+# RUN pip3 install pyndri
 
 RUN apt update && apt install -y ffmpeg
 
@@ -88,11 +88,11 @@ RUN mkdir -p /data/db
 COPY trec_documents trec_documents
 
 # Build indri index in directory /usr/src/app/indri-5.11/buildindex/my_index. Not needed if running with Bing.
-ARG use_indri_retriever=true
-RUN if $use_indri_retriever ; then cd indri-5.11/buildindex \
-    && ./IndriBuildIndex -memory=100M -corpus.class=trectext -index=my_index \
-    -stemmer.name=Krovetz -corpus.path=/usr/src/app/trec_documents \
-    ; fi
+# ARG use_indri_retriever=true
+#RUN if $use_indri_retriever ; then cd indri-5.11/buildindex \
+#    && ./IndriBuildIndex -memory=100M -corpus.class=trectext -index=my_index \
+#    -stemmer.name=Krovetz -corpus.path=/usr/src/app/trec_documents \
+#    ; fi
 
 # Copy files and directories from workspace to Docker container.
 COPY macaw macaw
@@ -103,6 +103,8 @@ ENV PYTHONPATH="$PYTHONPATH:/usr/src/app"
 
 # Install Macaw.
 RUN python3 setup.py install
+
+RUN python3 macaw/build_tanvity_index.py --index_path /usr/src/app/tantivy_index --document_path /usr/src/app/trec_documents
 
 # Run the script that will start MongoDB and run python application.
 CMD ["/bin/bash", "scripts/start.sh"]
