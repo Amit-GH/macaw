@@ -20,7 +20,7 @@ def get_trec_docs(documents_path: str) -> List[str]:
 def main(index_path, documents_path):
     # build the schema
     schema_builder = tantivy.SchemaBuilder()
-    schema_builder.add_text_field("body", stored=False)
+    schema_builder.add_text_field("body", stored=True)
     schema_builder.add_unsigned_field("doc_id", stored=True)
     schema = schema_builder.build()
     # create index
