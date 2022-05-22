@@ -25,7 +25,7 @@ def main(index_path, documents_path):
     # create index
     index = tantivy.Index(schema, path=index_path)
     # read all trec doc
-    documents = get_trec_doc(documents_path)
+    documents = get_trec_docs(documents_path)
     # add documents
     print('Building sparse index of {} docs...'.format(len(documents)))
     writer = index.writer()
