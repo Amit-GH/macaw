@@ -1,11 +1,10 @@
+import argparse
 import os
 from typing import List
 
 import tantivy
-import argparse
 
 from macaw.core.retrieval.doc import get_trec_doc
-from macaw.util import logging
 
 
 def get_trec_docs(documents_path: str) -> List[str]:
@@ -28,7 +27,7 @@ def main(index_path, documents_path):
     # read all trec doc
     documents = get_trec_doc(documents_path)
     # add documents
-    logging.info('Building sparse index of {} docs...'.format(len(documents)))
+    print('Building sparse index of {} docs...'.format(len(documents)))
     writer = index.writer()
     for i, doc in enumerate(documents):
         writer.add_document(tantivy.Document(
@@ -37,9 +36,9 @@ def main(index_path, documents_path):
         ))
         if (i + 1) % 100000 == 0:
             writer.commit()
-            logging.info('Indexed {} docs'.format(i + 1))
+            print('Indexed {} docs'.format(i + 1))
     writer.commit()
-    logging.info('Built sparse index')
+    print('Built sparse index')
     index.reload()
 
 
