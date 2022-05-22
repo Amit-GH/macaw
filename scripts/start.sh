@@ -10,3 +10,4 @@ echo "This is the python version: $(python3 --version)"
 
 # Start the main application.
 # python3 macaw/live_main.py
+python3
