@@ -44,5 +44,4 @@ class Tantivy(Retrieval):
         return docs
 
     def get_doc_from_index(self, doc_id):
-        # TODO: document should be TREC doc here
         return [get_trec_doc(self.searcher.doc(doc_id)['body'])]
