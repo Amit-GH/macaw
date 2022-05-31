@@ -64,7 +64,7 @@ version.
 
 The package has been tested with certain dependencies and it is much easier to reproduce it in a similar environment. It
 has been integrated with Docker to make it compatible with all operating systems. The default Docker setup runs the
-application using the Standard IO interface, uses Indri for document retrieval, and DrQA for MRC (answer selection). To
+application using the Standard IO interface, uses Tantivy for document retrieval, and DrQA for MRC (answer selection). To
 run using other settings, appropriate changes should be done.
 
 The first step is to install [Docker](https://docs.docker.com/engine/install/) in your system. Then continue with the
@@ -125,25 +125,18 @@ which first starts MongoDB server in a separate thread and then runs `live_main.
 
 #### ssh into the container
 
-While the application is running, we can go inside the container to see the contents (directory structure, indri index,
+While the application is running, we can go inside the container to see the contents (directory structure, Tantivy index,
 etc.).
 
 ```commandline
 docker exec -it macaw_test_container /bin/bash
 ```
 
-#### Updating TREC data for Indri
+#### Updating TREC data for Tantivy
 
-Indri index is created using the document stored in `trec_documents/` directory. It has some default data. To create a
+Tantivy index is created using the document stored in `trec_documents/` directory. It has some default data. To create a
 bigger index, download the entire data from [archive](https://archive.org/details/trec-ir) and put it in trec_documents.
-Docker will copy it during build time and create a new index. Index creation parameters like *-memory*, *-stemmer.name*
-can be changed inside the Dockerfile.
-
-### A note on dependencies
-
-Pyndri is tested only with [Indri-5.11](https://sourceforge.net/projects/lemur/files/lemur/indri-5.11/) which in turn
-only supports certain OS. We use Ubuntu-16.04 in our Docker container. Ubuntu 18.04 creates issues during indri index
-creation because of some unsupported C++11 functions. *pip* version <21.0 is needed to properly install pyndri.
+Docker will copy it during build time and create a new index.
 
 ## Local Setup
 
@@ -166,35 +159,9 @@ following command:
 sudo apt-get install mongodb-server-core
 ```
 
-#### Step 2: Installing Indri and Pyndri
-
-[Indri](http://lemurproject.org/indri.php) is an open-source search engine for information retrieval research,
-implemented as part of the [Lemur Project](http://lemurproject.org/).
-[Pyndri](https://github.com/cvangysel/pyndri) is a python interface to Indri. Macaw uses Indri for retrieving documents
-from an arbitrary text collection. To install Indri, first download Indri
-from https://sourceforge.net/projects/lemur/files/lemur/. As suggested by pyndri, we have used Indri-5.11. This Indri
-version can be installed as follows:
-
-```
-# download indri-5.11.tar.gz
-sudo apt install g++ zlib1g-dev
-tar xzvf indri-5.11.tar.gz
-rm indri-5.11.tar.gz
-cd indri-5.11
-./configure CXX="g++ -D_GLIBCXX_USE_CXX11_ABI=0"
-make
-sudo make install
-```
-
-Then, clone the pyndri repository from https://github.com/cvangysel/pyndri and run the following command:
-
-```
-python3 setup.py install
-```
-
 At this step, you can make sure your installation is complete by running the pyndri tests.
 
-#### Step 3: Installing Stanford Core NLP
+#### Step 2: Installing Stanford Core NLP
 
 Stanford Core NLP can be used for tokenization and most importantly for co-reference resolution. If you do not need
 co-reference resolution, you can ignore this step. Stanford Core NLP requires `java`. Get it by following these
@@ -213,7 +180,7 @@ If you don't have `java`, install it using:
 sudo apt-get install default-jre
 ```
 
-#### Step 4: Installing DrQA
+#### Step 3: Installing DrQA
 
 Macaw also supports answer extraction / generation for user queries from retrieved documents. For this purpose, it
 features [DrQA](https://github.com/facebookresearch/DrQA). If you do not need this functionality, ignore this step (you
@@ -235,7 +202,7 @@ To use pre-trained DrQA model, use the following command.
 
 This downloads a 7.5GB (compressed) file and requires 25GB (uncompressed) space. This may take a while!
 
-#### Step 5: Installing FFmpeg
+#### Step 4: Installing FFmpeg
 
 To support speech interactions with users, Macaw requires FFmpeg for some multimedia processing steps. If you don't need
 a speech support from Macaw, you can skip this step. To install FFmpeg, run the following command:
@@ -244,7 +211,7 @@ a speech support from Macaw, you can skip this step. To install FFmpeg, run the 
 sudo apt-get install 
 ```
 
-#### Step 6: Installing Macaw
+#### Step 5: Installing Macaw
 
 After cloning Macaw, use the following commands for installation:
 
@@ -274,7 +241,7 @@ We provide three different main scripts (i.e., app):
 + `wizard_of_oz_main.py`: A main script for Wizard of Oz experiments.
 
 After selecting the desired main script, open the python file and provide the required parameters. For example, you need
-to use your Bing subscription key (if using Bing), the path to Indri index (if using Indri), Telegram bot token (if
+to use your Bing subscription key (if using Bing), the path to Tantivy index, Telegram bot token (if
 using Telegram interface), etc. in order to run the `live_main.py` script. You can further run the favorite main script
 as below:
 

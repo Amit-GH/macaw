@@ -1,7 +1,7 @@
 """
-The Indri search engine.
+The Tantivy search engine.
 
-Authors: Hamed Zamani (hazamani@microsoft.com)
+Authors: Arkin Dharawat (adharawat@umass.edu)
 """
 
 import os

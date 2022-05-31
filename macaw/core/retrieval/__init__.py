@@ -4,7 +4,6 @@ The retrieval module init.
 Authors: Hamed Zamani (hazamani@microsoft.com)
 """
 import macaw.core.retrieval.bing_api
-# import macaw.core.retrieval.indri
 import macaw.core.retrieval.tantivy
 from macaw.core.retrieval import search_engine, query_generation
 
@@ -29,7 +28,7 @@ def get_retrieval_model(params):
         raise Exception('The requested query generation model does not exist!')
 
     params['logger'].info('The search engine for retrieval: ' + params['search_engine'])
-    if params['search_engine'] == 'indri' or params['search_engine'] == 'tantivy':
+    if params['search_engine'] == 'tantivy':
         return macaw.core.retrieval.tantivy.Tantivy({'query_generation': q_generation,
                                                      'path': params['search_engine_path'],
                                                      'load': True,
@@ -41,4 +40,4 @@ def get_retrieval_model(params):
                                                             'results_requested': params['results_requested'],
                                                             'logger': params['logger']})
     else:
-        raise Exception('The requested retrieval model does not exist!')
+        raise Exception(f'{params["search_engine"]} retrieval model does not exist!')

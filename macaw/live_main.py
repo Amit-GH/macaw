@@ -81,7 +81,6 @@ if __name__ == '__main__':
                         'use_coref': True,  # True, if query generator can use coreference resolution, otherwise False.
                         'search_engine': 'tantivy',  # the search engine.
                         'bing_key': 'YOUR_BING_SUBSCRIPTION_KEY',  # Bing API key
-                        # 'search_engine_path': '/usr/src/app/indri-5.11',  # The path to the indri toolkit.
                         'search_engine_path': 'tantivy_index/',  # The path to the tantivy index.
                         'col_index': '/usr/src/app/indri-5.11/buildindex/my_index',  # The path to the indri index.
                         'col_text_format': 'trectext',  # collection text format. Standard 'trectext' is only supported.
