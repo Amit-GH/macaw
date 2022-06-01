@@ -67,6 +67,9 @@ ENV PYTHONPATH="$PYTHONPATH:/usr/src/app"
 # Install Macaw.
 RUN python3 setup.py install
 
+# To fix async keyword issue in python3.7+ https://github.com/pexpect/pexpect/issues/453
+RUN pip3 install -Iv pexpect==4.8.0
+
 # Create index
 RUN mkdir tantivy_index/
 RUN python3 macaw/build_tantivy_index.py --index_path tantivy_index/ --document_path trec_documents/
