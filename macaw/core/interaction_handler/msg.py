@@ -1,7 +1,7 @@
 """
 The message used to represent each interaction in Macaw.
 
-Authors: Hamed Zamani (hazamani@microsoft.com)
+Authors: Hamed Zamani (hazamani@microsoft.com), George Wei (gzwei@umass.edu)
 """
 
 
@@ -16,7 +16,7 @@ class Message:
             user_info(dict): The dict containing some more information about the user.
             msg_info(dict): The dict containing some more information about the message.
             text(str): The message text.
-            timestamp(int): The timestamp of message in milliseconds.
+            timestamp(int): The timestamp of message.
         """
         self.user_id = user_id
         self.user_info = user_info
@@ -35,10 +35,10 @@ class Message:
         Returns:
             A Message object.
         """
-        user_interface = msg_dict['user_interface'] if 'user_interface' in msg_dict else None
-        user_id = msg_dict['user_id'] if 'user_id' in msg_dict else None
-        user_info = msg_dict['user_info'] if 'user_info' in msg_dict else None
-        msg_info = msg_dict['msg_info'] if 'msg_info' in msg_dict else None
-        text = msg_dict['text'] if 'text' in msg_dict else None
-        timestamp = msg_dict['timestamp'] if 'timestamp' in msg_dict else None
+        user_interface = msg_dict.get("user_interface", None)
+        user_id = msg_dict.get("user_id", None)
+        user_info = msg_dict.get("user_info", None)
+        msg_info = msg_dict.get("msg_info", None)
+        text = msg_dict.get("text", None)
+        timestamp = msg_dict.get("timestamp", None)
         return cls(user_interface, user_id, user_info, msg_info, text, timestamp)
