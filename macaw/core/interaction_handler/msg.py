@@ -3,27 +3,43 @@ The message used to represent each interaction in Macaw.
 
 Authors: Hamed Zamani (hazamani@microsoft.com), George Wei (gzwei@umass.edu)
 """
+from datetime import datetime
+from typing import Optional
 
 
 class Message:
-    def __init__(self, user_interface, user_id, user_info, msg_info, text, timestamp):
+    def __init__(
+        self,
+        user_interface: str,
+        user_id: str | int,
+        text: str,
+        timestamp: datetime,
+        user_info: Optional[dict[str, any]] = None,
+        msg_info: Optional[dict[str, any]] = None,
+        actions: Optional[dict[str, any]] = None,
+        dialog_state_tracking: Optional[dict[str, any]] = None,
+    ):
         """
         An object for input and output Message.
 
         Args:
             user_interface(str): The interface name used for this message (e.g., 'telegram')
-            user_id(str or int): The user ID.
-            user_info(dict): The dict containing some more information about the user.
-            msg_info(dict): The dict containing some more information about the message.
+            user_id(str | int): The user ID.
             text(str): The message text.
-            timestamp(int): The timestamp of message.
+            timestamp(datetime.datetime): The timestamp of message.
+            user_info(dict): (Optional) The dict containing some more information about the user.
+            msg_info(dict): (Optional) The dict containing some more information about the message.
+            actions(dict): (Optional) The results from the various actions given the conversation history.
+            dialog_state_tracking(dict): (Optional) The dialog state tracking dict.
         """
+        self.user_interface = user_interface
         self.user_id = user_id
-        self.user_info = user_info
-        self.msg_info = msg_info
         self.text = text
         self.timestamp = timestamp
-        self.user_interface = user_interface
+        self.user_info = user_info
+        self.msg_info = msg_info
+        self.actions = actions
+        self.dialog_state_tracking = dialog_state_tracking
 
     @classmethod
     def from_dict(cls, msg_dict):
@@ -35,10 +51,4 @@ class Message:
         Returns:
             A Message object.
         """
-        user_interface = msg_dict.get("user_interface", None)
-        user_id = msg_dict.get("user_id", None)
-        user_info = msg_dict.get("user_info", None)
-        msg_info = msg_dict.get("msg_info", None)
-        text = msg_dict.get("text", None)
-        timestamp = msg_dict.get("timestamp", None)
-        return cls(user_interface, user_id, user_info, msg_info, text, timestamp)
+        return cls(**msg_dict)

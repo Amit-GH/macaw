@@ -18,13 +18,6 @@ class InteractionDB:
         self.col = self.db["macaw_msgs"]
 
     def insert_one(self, msg):
-        if any(
-            getattr(msg, attr) is None
-            for attr in ["user_id", "text", "timestamp", "user_interface"]
-        ):
-            raise Exception(
-                "Each message should include a user_interface, user_id, text, and timestamp."
-            )
         self.col.insert_one(msg.__dict__)
 
     def update_one(self, user_id, updates):
