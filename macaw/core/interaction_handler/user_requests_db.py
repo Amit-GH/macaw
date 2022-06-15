@@ -18,7 +18,7 @@ class InteractionDB:
         self.col = self.db["macaw_msgs"]
 
     def insert_one(self, msg):
-        self.col.insert_one(msg.__dict__)
+        self.col.insert_one(dict(msg))
 
     def update_one(self, user_id, updates):
         self.col.find_one_and_update(
