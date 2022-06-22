@@ -3,7 +3,8 @@ The interactive CIS main file.
 
 Authors: Hamed Zamani (hazamani@microsoft.com)
 """
-
+from core.dialogue_manager.dialogue_manager import DialogueManager
+from core.nlp_pipeline.nlp_pipeline import NlpPipeline
 from macaw.cis import CIS
 from macaw.core import mrc, retrieval
 from macaw.core.input_handler.action_detection import RequestDispatcher
@@ -31,6 +32,9 @@ class ConvQA(CIS):
         self.params['actions'] = {'retrieval': self.retrieval, 'qa': self.qa}
         self.request_dispatcher = RequestDispatcher(self.params)
         self.output_selection = naive_output_selection.NaiveOutputProcessing({})
+        self.dialogue_manager = DialogueManager()
+        self.nlp_pipeline = NlpPipeline(params.get('nlp_modules', {}))
+        self.state_manager = None  # To keep track of the state of conversation.
 
     def request_handler_func(self, conv_list):
         """
@@ -45,7 +49,16 @@ class ConvQA(CIS):
             output_msg(Message): Returns an output message that should be sent to the UI to be presented to the user.
         """
         self.logger.info(conv_list)
+
+        self.nlp_pipeline.run(self.state_manager)
+
+        # Run the DST module here. Save the output locally.
+        nlp_pipeline_output = None
+        self.dialogue_manager.process_turn(nlp_pipeline_output)
+
+        # TODO: request dispatcher should also use DST output.
         dispatcher_output = self.request_dispatcher.dispatch(conv_list)
+        
         output_msg = self.output_selection.get_output(conv_list, dispatcher_output)
         return output_msg
 
@@ -58,7 +71,7 @@ class ConvQA(CIS):
 
 if __name__ == '__main__':
     basic_params = {'timeout': 15,  # timeout is in terms of second.
-                    'mode': 'live',  # mode can be either live or exp.
+                    'mode': 'exp',  # mode can be either live or exp.
                     'logger': Logger({})}  # for logging into file, pass the filepath to the Logger class.
 
     # These are required database parameters if the mode is 'live'. The host and port of the machine hosting the
@@ -68,8 +81,13 @@ if __name__ == '__main__':
                  'interaction_db_name': 'macaw_test'}
 
     # These are interface parameters. They are interface specific.
-    interface_params = {'interface': 'stdio',  # interface can be 'telegram' or 'stdio' for live mode, and 'fileio'
+    interface_params = {'interface': 'fileio',  # interface can be 'telegram' or 'stdio' for live mode, and 'fileio'
                                                # for experimental mode.
+
+                        'input_file_path': '/usr/src/app/data/file_input.txt',
+                        'output_file_path': '/usr/src/app/data/file_output.txt',
+                        'output_format': 'text',
+
                         'bot_token': 'YOUR_TELEGRAM_BOT_TOKEN',  # Telegram bot token.
                         # 'asr_model': 'google',  # The API used for speech recognition.
                         # 'asg_model': 'google',  # The API used for speech generation.

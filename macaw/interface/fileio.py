@@ -21,7 +21,8 @@ class FileioInterface(Interface):
             for line in input_file:
                 str_list = line.strip().split('\t')
                 if len(str_list) < 2:
-                    raise Exception('Each input line should contain at least 2 elements: a query ID and a query text.')
+                    raise Exception(f"Each input line should contain at least 2 elements: a query ID and a query text."
+                                    f"Invalid line: {line}")
                 qid = str_list[0]
 
                 conv_list = []
