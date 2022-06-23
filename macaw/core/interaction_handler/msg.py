@@ -4,7 +4,7 @@ The message used to represent each interaction in Macaw.
 Authors: Hamed Zamani (hazamani@microsoft.com), George Wei (gzwei@umass.edu)
 """
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Union, Dict
 
 from .attributes import UserAttributes
 
@@ -13,15 +13,15 @@ class Message:
     def __init__(
         self,
         user_interface: str,
-        user_id: str | int,
+        user_id: Union[str, int],
         text: str,
         timestamp: datetime,
-        user_info: Optional[dict[str, any]] = None,
-        msg_info: Optional[dict[str, any]] = None,
-        actions: Optional[dict[str, any]] = None,
-        dialog_state_tracking: Optional[dict[str, any]] = None,
-        nlp_pipeline: Optional[dict[str, any]] = None,
-        user_attributes: Optional[dict[str, any]] = None,
+        user_info: Optional[Dict[str, any]] = None,
+        msg_info: Optional[Dict[str, any]] = None,
+        actions: Optional[Dict[str, any]] = None,
+        dialog_state_tracking: Optional[Dict[str, any]] = None,
+        nlp_pipeline: Optional[Dict[str, any]] = None,
+        user_attributes: Optional[Dict[str, any]] = None,
     ):
         """
         An object for input and output Message.

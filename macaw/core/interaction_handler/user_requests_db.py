@@ -4,7 +4,7 @@ The conversation (or interaction) database implemented using MongoDB.
 Authors: Hamed Zamani (hazamani@microsoft.com), George Wei (gzwei@umass.edu)
 """
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from pymongo import MongoClient
 
@@ -39,7 +39,7 @@ class InteractionDB:
                 {
                     "user_id": user_id,
                     "timestamp": {
-                        "$gt": datetime.utcnow() - datetime.timedelta(minutes=max_time)
+                        "$gt": datetime.utcnow() - timedelta(minutes=max_time)
                     },
                 },
                 sort=[("timestamp", -1)],
@@ -54,4 +54,8 @@ class InteractionDB:
 
     @staticmethod
     def dict_list_to_msg_list(msg_dict_list):
-        return [Message.from_dict(msg_dict) for msg_dict in msg_dict_list]
+        msg_list = []
+        for msg_dict in msg_dict_list:
+            msg_dict.pop("_id")
+            msg_list.append(Message.from_dict(msg_dict=msg_dict))
+        return msg_list

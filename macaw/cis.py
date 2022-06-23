@@ -51,7 +51,7 @@ class CIS(ABC):
         try:
             # load conversation from the database and add the current message to the database
             conv = [msg] + self.msg_db.get_conv_history(
-                user_id=msg.user_id, max_time=10, max_count=10
+                user_id=msg.user_id, max_time=10*60*1000, max_count=10
             )
             self.msg_db.insert_one(msg)
 
@@ -61,6 +61,7 @@ class CIS(ABC):
             return output_msg
 
         except FunctionTimedOut:
+            print(f"live_request_handler method timed out.")
             msg_info = dict()
             msg_info["msg_id"] = msg.msg_info["msg_id"]
             msg_info["msg_source"] = "system"
@@ -68,12 +69,12 @@ class CIS(ABC):
             text = "Time out, no result!"
             timestamp = datetime.utcnow()
             error_msg = Message(
-                msg.user_interface,
-                msg.user_id,
-                msg.user_info,
-                msg_info,
-                text,
-                timestamp,
+                user_interface=msg.user_interface,
+                user_id=msg.user_id,
+                user_info=msg.user_info,
+                msg_info=msg_info,
+                text=text,
+                timestamp=timestamp,
             )
             self.msg_db.insert_one(error_msg)
             return error_msg

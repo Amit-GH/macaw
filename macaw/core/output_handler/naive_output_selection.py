@@ -101,4 +101,11 @@ class NaiveOutputProcessing(OutputProcessing):
         timestamp = datetime.utcnow()
         if timestamp <= conv[0].timestamp:
             raise Exception("There is a problem in the output timestamp!")
-        return Message(user_interface, user_id, user_info, msg_info, text, timestamp)
+        return Message(
+            user_interface=user_interface,
+            user_id=user_id,
+            user_info=user_info,
+            msg_info=msg_info,
+            text=text,
+            timestamp=timestamp
+        )
