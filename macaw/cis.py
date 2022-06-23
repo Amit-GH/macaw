@@ -34,7 +34,14 @@ class CIS(ABC):
             )
             self.params["curr_attrs"] = self.curr_attrs = CurrentAttributes()
         elif params["mode"] == "exp":
+            # TODO: this request handler doesn't support interaction with the DB.
             self.params["experimental_request_handler"] = self.request_handler_func
+            self.msg_db = InteractionDB(
+                host=self.params["interaction_db_host"],
+                port=self.params["interaction_db_port"],
+                dbname=self.params["interaction_db_name"],
+            )
+            self.params["curr_attrs"] = self.curr_attrs = CurrentAttributes()
 
         self.interface = interface.get_interface(params)
         try:

@@ -5,6 +5,7 @@ Authors: Hamed Zamani (hazamani@microsoft.com)
 """
 
 import time
+from datetime import datetime
 
 from macaw.core.interaction_handler.msg import Message
 from macaw.interface.interface import Interface
@@ -32,12 +33,12 @@ class FileioInterface(Interface):
                     user_info = {"first_name": "NONE"}
                     msg_info = {"msg_id": qid, "msg_type": "text", "msg_source": "user"}
                     msg = Message(
-                        user_interface="NONE",
+                        user_interface="fileio",
                         user_id=-1,
                         user_info=user_info,
                         msg_info=msg_info,
                         text=str_list[i],
-                        timestamp=-1,
+                        timestamp=datetime.utcnow(),
                     )
                     conv_list.append(msg)
                 conv_list.reverse()
