@@ -11,6 +11,8 @@ from macaw.core.input_handler.action_detection import RequestDispatcher
 from macaw.core.output_handler import naive_output_selection
 from macaw.util.logging import Logger
 
+import argparse
+
 
 class ConvQA(CIS):
     def __init__(self, params):
@@ -69,9 +71,18 @@ class ConvQA(CIS):
         self.interface.run()
 
 
+parser = argparse.ArgumentParser(description="Run live_main.py file")
+
+
 if __name__ == '__main__':
+    # Parse input arguments.
+    parser.add_argument("--mode", type=str, default="live", help="live or exp (experimental)")
+    parser.add_argument("--interface", type=str, default="stdio", help="can be 'telegram' or 'stdio' for live mode, and"
+                                                                       " 'fileio' for exp mode")
+    args = parser.parse_args()
+
     basic_params = {'timeout': 15,  # timeout is in terms of second.
-                    'mode': 'exp',  # mode can be either live or exp.
+                    'mode': args.mode,  # mode can be either live or exp.
                     'logger': Logger({})}  # for logging into file, pass the filepath to the Logger class.
 
     # These are required database parameters if the mode is 'live'. The host and port of the machine hosting the
@@ -81,8 +92,8 @@ if __name__ == '__main__':
                  'interaction_db_name': 'macaw_test'}
 
     # These are interface parameters. They are interface specific.
-    interface_params = {'interface': 'fileio',  # interface can be 'telegram' or 'stdio' for live mode, and 'fileio'
-                                               # for experimental mode.
+    interface_params = {'interface': args.interface,  # interface can be 'telegram' or 'stdio' for live mode, and
+                                                      # 'fileio' for experimental mode.
 
                         'input_file_path': '/usr/src/app/data/file_input.txt',
                         'output_file_path': '/usr/src/app/data/file_output.txt',
