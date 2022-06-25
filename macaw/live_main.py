@@ -3,16 +3,13 @@ The interactive CIS main file.
 
 Authors: Hamed Zamani (hazamani@microsoft.com)
 """
-from core.dialogue_manager.dialogue_manager import DialogueManager
-from core.nlp_pipeline.nlp_pipeline import NlpPipeline
+import argparse
+from typing import List
+
+from core.interaction_handler import Message
 from macaw.cis import CIS
 from macaw.core import mrc, retrieval
-from macaw.core.input_handler.action_detection import RequestDispatcher
-from macaw.core.interaction_handler import CurrentAttributes
-from macaw.core.output_handler import naive_output_selection
 from macaw.util.logging import Logger
-
-import argparse
 
 
 class ConvQA(CIS):
@@ -30,17 +27,15 @@ class ConvQA(CIS):
         super().__init__(params)
         self.logger = params["logger"]
         self.logger.info("Conversational QA Model... starting up...")
-        self.params["current_attributes"] = CurrentAttributes()
-        self.retrieval = retrieval.get_retrieval_model(params=self.params)
-        self.qa = mrc.get_mrc_model(params=self.params)
-        self.params["actions"] = {"retrieval": self.retrieval, "qa": self.qa}
-        self.request_dispatcher = RequestDispatcher(self.params)
-        self.output_selection = naive_output_selection.NaiveOutputProcessing({})
-        self.dialogue_manager = DialogueManager()
-        self.nlp_pipeline = NlpPipeline(params.get('nlp_modules', {}))
-        self.state_manager = None  # To keep track of the state of conversation.
+        self.params["actions"] = self.generate_actions()
 
-    def request_handler_func(self, conv_list):
+    def generate_actions(self) -> dict:
+        return {
+            "retrieval": retrieval.get_retrieval_model(params=self.params),
+            "qa": mrc.get_mrc_model(params=self.params)
+        }
+
+    def request_handler_func(self, conv_list: List[Message]) -> Message:
         """
         This function is called for each conversational interaction made by the user. In fact, this function calls the
         dispatcher to send the user request to the information seeking components.
@@ -54,7 +49,7 @@ class ConvQA(CIS):
         """
         self.logger.info(conv_list)
 
-        self.nlp_pipeline.run(self.state_manager)
+        self.nlp_pipeline.run(conv_list)
 
         # Run the DST module here. Save the output locally.
         nlp_pipeline_output = None
@@ -64,6 +59,12 @@ class ConvQA(CIS):
         dispatcher_output = self.request_dispatcher.dispatch(conv_list)
 
         output_msg = self.output_selection.get_output(conv_list, dispatcher_output)
+
+        # Save nlp_pipeline result, action result and dialogue_manager so that they are persisted in DB.
+        output_msg.nlp_pipeline_result = nlp_pipeline_output
+        output_msg.actions_result = None
+        output_msg.dialog_manager = self.dialogue_manager
+
         return output_msg
 
     def run(self):
@@ -74,7 +75,6 @@ class ConvQA(CIS):
 
 
 parser = argparse.ArgumentParser(description="Run live_main.py file")
-
 
 if __name__ == "__main__":
     # Parse input arguments.
@@ -100,7 +100,7 @@ if __name__ == "__main__":
     # These are interface parameters. They are interface specific.
     interface_params = {
         "interface": args.interface,  # interface can be 'telegram' or 'stdio' for live mode, and 'fileio'
-                                      # for experimental mode.
+        # for experimental mode.
         "input_file_path": "/usr/src/app/data/file_input.txt",
         "output_file_path": "/usr/src/app/data/file_output.txt",
         "output_format": "text",

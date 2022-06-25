@@ -12,8 +12,12 @@ class State(enum.Enum):
 
 
 class DST:
-    def __init__(self):
-        self.curr_state = State.launch
+    def __init__(self, state=None):
+        self.curr_state = State.launch if state is None else state
+
+    @classmethod
+    def decode(cls, encoded: dict):
+        return DST(State(encoded["curr_state"]))
 
     def transition(self, input_alphabet, context) -> Union[str, State]:
         """
@@ -30,3 +34,9 @@ class DST:
 
     def update(self, new_state: State):
         self.curr_state = new_state
+
+    def encode(self) -> dict:
+        return {
+            "curr_state": self.curr_state.value
+        }
+
