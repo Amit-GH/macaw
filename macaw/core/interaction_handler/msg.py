@@ -60,7 +60,7 @@ class Message:
     @classmethod
     def from_dict(cls, msg_dict):
         """
-        Get a Message object from serialized dict stored in database.
+        Get a Message object from serialized dict obtained from database (e.g. MongoDB).
         Args:
             msg_dict(dict): A dict containing all the information required to construct a Message object.
 

@@ -41,6 +41,7 @@ class CIS(ABC):
         )
 
         self.params["curr_attrs"] = self.curr_attrs = CurrentAttributes()
+        self.params["actions"] = self.generate_actions()
         self.interface = interface.get_interface(params)
         self.request_dispatcher = RequestDispatcher(self.params)
         self.output_selection = naive_output_selection.NaiveOutputProcessing({})

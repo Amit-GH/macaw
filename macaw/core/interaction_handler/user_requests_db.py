@@ -13,13 +13,10 @@ from macaw.core.interaction_handler.msg import Message
 
 
 class InteractionDB:
-    def __init__(self, host, port, dbname, son_manipulator=None):
+    def __init__(self, host, port, dbname):
         self.client = MongoClient(host, port)
         self.db = self.client[dbname]
         self.col = self.db["macaw_msgs"]
-
-        if son_manipulator is not None:
-            self.db.add_son_manipulator(son_manipulator)
 
     def insert_one(self, msg):
         self.col.insert_one(dict(msg))
@@ -61,8 +58,6 @@ class InteractionDB:
         msg_list = []
         for msg_dict in msg_dict_list:
             msg_dict.pop("_id")
-            print(f"amitgh dict_list_to_msg {msg_dict['dialog_manager']}")
             message = Message.from_dict(msg_dict=msg_dict)
-            print(f"amitgh message {message}, {message.dialog_manager}")
             msg_list.append(message)
         return msg_list

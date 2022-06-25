@@ -27,7 +27,6 @@ class ConvQA(CIS):
         super().__init__(params)
         self.logger = params["logger"]
         self.logger.info("Conversational QA Model... starting up...")
-        self.params["actions"] = self.generate_actions()
 
     def generate_actions(self) -> dict:
         return {
