@@ -9,7 +9,7 @@ from typing import List
 from core.interaction_handler import Message
 from macaw.cis import CIS
 from macaw.core import mrc, retrieval
-from macaw.util.logging import Logger
+from macaw.util.custom_logging import LoggerFactory
 
 
 class ConvQA(CIS):
@@ -25,7 +25,6 @@ class ConvQA(CIS):
             for more information on the required parameters.
         """
         super().__init__(params)
-        self.logger = params["logger"]
         self.logger.info("Conversational QA Model... starting up...")
 
     def generate_actions(self) -> dict:
@@ -36,35 +35,35 @@ class ConvQA(CIS):
 
     def request_handler_func(self, conv_list: List[Message]) -> Message:
         """
-        This function is called for each conversational interaction made by the user. In fact, this function calls the
-        dispatcher to send the user request to the information seeking components.
+        This function is called for each conversational interaction made by the user. It calls the NLP pipeline, DST
+        model and all the actions and saves their result in the latest conversation message.
 
         Args:
-            conv_list(list): List of util.msg.Message, each corresponding to a conversational message from / to the
+            conv_list(list): List of Message, each corresponding to a conversational message from / to the
             user. This list is in reverse order, meaning that the first elements is the last interaction made by user.
 
         Returns:
             output_msg(Message): Returns an output message that should be sent to the UI to be presented to the user.
+            It is the latest conversation message.
         """
         self.logger.info(conv_list)
 
         self.nlp_pipeline.run(conv_list)
 
-        # Run the DST module here. Save the output locally.
-        nlp_pipeline_output = None
+        # Run the DST module and save the output in conversation.
+        nlp_pipeline_output = conv_list[0].nlp_pipeline_result
         self.dialogue_manager.process_turn(nlp_pipeline_output)
+        conv_list[0].dialog_manager = self.dialogue_manager
 
-        # TODO: request dispatcher should also use DST output.
         dispatcher_output = self.request_dispatcher.dispatch(conv_list)
 
         output_msg = self.output_selection.get_output(conv_list, dispatcher_output)
 
-        # Save nlp_pipeline result, action result and dialogue_manager so that they are persisted in DB.
-        output_msg.nlp_pipeline_result = nlp_pipeline_output
-        output_msg.actions_result = None
-        output_msg.dialog_manager = self.dialogue_manager
+        conv_list[0].msg_info = output_msg.msg_info
+        conv_list[0].response = output_msg.response
+        conv_list[0].timestamp = output_msg.timestamp
 
-        return output_msg
+        return conv_list[0]
 
     def run(self):
         """
@@ -85,8 +84,10 @@ if __name__ == "__main__":
     basic_params = {
         "timeout": 15,  # timeout is in terms of second.
         "mode": args.mode,  # mode can be either live or exp.
-        "logger": Logger({}),
-    }  # for logging into file, pass the filepath to the Logger class.
+    }
+
+    # for logging into file, pass the filepath to the Logger class.
+    my_logger = LoggerFactory.create_logger({})
 
     # These are required database parameters if the mode is 'live'. The host and port of the machine hosting the
     # database, as well as the database name.
@@ -135,12 +136,22 @@ if __name__ == "__main__":
         "qa_results_requested": 3,
     }  # The number of candidate answers returned by the MRC model.
 
+    # NLP modules parameters.
+    nlp_modules = {
+        "nlp_modules": {
+            "intent_classification": "http://nlp-pipeline-app-ic:80",
+            "sample_flask": "http://nlp-pipeline-app-flask:80"
+        }
+    }
+
     params = {
         **basic_params,
         **db_params,
         **interface_params,
         **retrieval_params,
         **mrc_params,
+        **nlp_modules
     }
-    basic_params["logger"].info(params)
+
+    my_logger.info(params)
     ConvQA(params).run()
