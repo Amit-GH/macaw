@@ -16,3 +16,7 @@ services:
     build: ./macaw/docker/ic_app
     ports:
       - "127.0.0.1:8002:80"
+  response-generator-app-qa:
+    build: ./macaw/docker/qa_app
+    ports:
+      - "127.0.0.1:8003:80"

@@ -1,4 +1,4 @@
-FROM python:3.7.13-slim
+FROM python:3.8.13
 
 RUN apt-get update && apt-get install -y \
     nginx \
@@ -35,4 +35,4 @@ COPY config/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 EXPOSE 80
 
 # Start processes
-CMD ["/usr/bin/supervisord"]
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

@@ -184,6 +184,7 @@ found from the `docker-compose.yml` file.
 ```commandline
 docker compose run --rm -p "127.0.0.1:8001:80" --name nlp-pipeline-app-flask nlp-pipeline-app-flask
 docker compose run --rm -p "127.0.0.1:8002:80" --name nlp-pipeline-app-ic nlp-pipeline-app-ic
+docker compose run --rm -p "127.0.0.1:8003:80" --name response-generator-app-qa response-generator-app-qa
 ```
 
 Third, run the main application which has stdio (or it can also have fileio). For stdio update the flags in `start.sh`

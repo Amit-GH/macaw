@@ -6,6 +6,7 @@ Authors: Hamed Zamani (hazamani@microsoft.com)
 import argparse
 from typing import List
 
+from core.input_handler.response_generator import ResponseGeneratorPunctuation
 from core.interaction_handler import Message
 from macaw.cis import CIS
 from macaw.core import mrc, retrieval
@@ -58,6 +59,13 @@ class ConvQA(CIS):
         dispatcher_output = self.request_dispatcher.dispatch(conv_list)
 
         output_msg = self.output_selection.get_output(conv_list, dispatcher_output)
+
+        # Run response generator.
+        models_to_run = self.response_generator_handler.models_selector(conv_list)
+        rg_output = self.response_generator_handler.run_models(models_to_run, conv_list)
+        self.logger.info(f"rg_output: {rg_output}")
+
+        # TODO: Select or create response from RG output.
 
         conv_list[0].msg_info = output_msg.msg_info
         conv_list[0].response = output_msg.response
@@ -136,11 +144,15 @@ if __name__ == "__main__":
         "qa_results_requested": 3,
     }  # The number of candidate answers returned by the MRC model.
 
-    # NLP modules parameters.
-    nlp_modules = {
-        "nlp_modules": {
+    # ML modules which are part of the NLP pipeline and all response generators.
+    ml_modules = {
+        "nlp_models": {
             "intent_classification": "http://nlp-pipeline-app-ic:80",
-            "sample_flask": "http://nlp-pipeline-app-flask:80"
+            "sample_flask": "http://nlp-pipeline-app-flask:80",
+        },
+        "response_generator_models": {
+            "qa": "http://response-generator-app-qa:80",
+            "punctuation": ResponseGeneratorPunctuation(name="punctuation_model")
         }
     }
 
@@ -150,7 +162,7 @@ if __name__ == "__main__":
         **interface_params,
         **retrieval_params,
         **mrc_params,
-        **nlp_modules
+        **ml_modules
     }
 
     my_logger.info(params)
