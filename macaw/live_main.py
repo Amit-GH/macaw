@@ -50,6 +50,7 @@ class ConvQA(CIS):
         self.logger.info(conv_list)
 
         self.nlp_pipeline.run(conv_list)
+        self.logger.info(f"nlp pipeline result: {conv_list[0].nlp_pipeline_result}")
 
         # Run the DST module and save the output in conversation.
         nlp_pipeline_output = conv_list[0].nlp_pipeline_result

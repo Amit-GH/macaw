@@ -11,5 +11,5 @@ def handle_message(msg: dict) -> dict:
     Returns the response dictionary. Throws appropriate error if the model cannot generate a response.
     """
     return {
-        "response": "okay from an ml model."
+        "response": "okay from flask app."
     }

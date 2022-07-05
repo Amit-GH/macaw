@@ -1,4 +1,8 @@
 import json
+import logging
+import multiprocessing
+import time
+from multiprocessing import Pool
 from typing import List
 
 import requests
@@ -25,6 +29,7 @@ class RemoteModel:
 class NlpPipeline:
     def __init__(self, modules: dict):
         self.modules = dict()
+        self.logger = logging.getLogger("MacawLogger")
         for model_name, endpoint in modules.items():
             self.modules[model_name] = RemoteModel(model_name, endpoint)
 
@@ -33,11 +38,26 @@ class NlpPipeline:
         Runs all the models and saves their results in the latest conversation (conv_list[0]) message.
         """
         nlp_pipeline_result = {}
-        for model_name, model in self.modules.items():
-            # TODO: pass in required input to every model.
-            model_output = model.run({
-                "text": "input text for model"
-            })
-            print(f"{model_name} model output: {model_output}")
-            nlp_pipeline_result[model_name] = model_output
+
+        with Pool(processes=4) as pool:
+            all_async_results = []
+            for model_name, model in self.modules.items():
+                # pass in required input to every model.
+                model_input = {"text": "input text for model"}
+                async_result = pool.apply_async(
+                    func=model.run,
+                    args=(model_input,)
+                )
+                all_async_results.append((model_name, async_result))
+            pool.close()
+
+            max_wait_time_in_secs = 10  # wait time for all modules combined.
+            end_time = time.time() + max_wait_time_in_secs
+            for model_name, async_result in all_async_results:
+                try:
+                    nlp_pipeline_result[model_name] = async_result.get(timeout=max(end_time - time.time(), 0))
+                except multiprocessing.TimeoutError as te:
+                    self.logger.error(f"Module {model_name} timed out. {te}")
+            pool.join()
+
         conv_list[0].nlp_pipeline_result = nlp_pipeline_result
