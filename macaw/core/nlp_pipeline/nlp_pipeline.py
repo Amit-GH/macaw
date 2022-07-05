@@ -57,7 +57,12 @@ class NlpPipeline:
                 try:
                     nlp_pipeline_result[model_name] = async_result.get(timeout=max(end_time - time.time(), 0))
                 except multiprocessing.TimeoutError as te:
-                    self.logger.error(f"Module {model_name} timed out. {te}")
+                    resp_msg = f"Module {model_name} timed out."
+                    self.logger.error(f"{resp_msg} {te}")
+                    nlp_pipeline_result[model_name] = {
+                        "response": resp_msg,
+                        "error": True,
+                    }
             pool.join()
 
         conv_list[0].nlp_pipeline_result = nlp_pipeline_result

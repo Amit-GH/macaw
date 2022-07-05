@@ -81,10 +81,9 @@ class ConvQA(CIS):
         self.interface.run()
 
 
-parser = argparse.ArgumentParser(description="Run live_main.py file")
-
 if __name__ == "__main__":
     # Parse input arguments.
+    parser = argparse.ArgumentParser(description="Run live_main.py file")
     parser.add_argument("--mode", type=str, default="live", help="live or exp (experimental)")
     parser.add_argument("--interface", type=str, default="stdio", help="can be 'telegram' or 'stdio' for live mode, and"
                                                                        " 'fileio' for exp mode")
