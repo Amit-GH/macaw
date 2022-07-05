@@ -8,6 +8,10 @@ services:
       - "/Users/amitgh/PycharmProjects/DrQA/data:/usr/src/app/DrQA/data"
       - "/Users/amitgh/PycharmProjects/Maruna/macaw/stanford-corenlp-full-2017-06-09:/usr/src/app/stanford-corenlp-full-2017-06-09"
       - "/Users/amitgh/PycharmProjects/Maruna/macaw/data:/usr/src/app/data"
+    deploy:
+      resources:
+        limits:
+          memory: 5gb
   nlp-pipeline-app-flask:
     build: ./macaw/docker/flask_app
     ports:

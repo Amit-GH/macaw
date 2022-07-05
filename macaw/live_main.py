@@ -6,8 +6,8 @@ Authors: Hamed Zamani (hazamani@microsoft.com)
 import argparse
 from typing import List
 
-from core.input_handler.response_generator import ResponseGeneratorPunctuation
 from core.interaction_handler import Message
+from core.response.punctuation import ResponseGeneratorPunctuation
 from macaw.cis import CIS
 from macaw.core import mrc, retrieval
 from macaw.util.custom_logging import LoggerFactory

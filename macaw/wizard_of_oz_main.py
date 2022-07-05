@@ -8,7 +8,7 @@ import multiprocessing
 
 from macaw import interface
 from macaw.core import retrieval
-from macaw.core.input_handler.action_detection import RequestDispatcher
+from macaw.core.response.action_detection import RequestDispatcher
 from macaw.core.interaction_handler.user_requests_db import InteractionDB
 from macaw.core.output_handler import naive_output_selection
 from macaw.util.custom_logging import LoggerFactory

@@ -5,10 +5,10 @@ import logging
 
 from func_timeout import FunctionTimedOut
 
-from core.input_handler.response_generator import ResponseGeneratorHandler
+from core.response.handler import ResponseGeneratorHandler
 from macaw import interface, util
 from macaw.core.dialogue_manager.dialogue_manager import DialogManager
-from macaw.core.input_handler.action_detection import RequestDispatcher
+from macaw.core.response.action_detection import RequestDispatcher
 from macaw.core.interaction_handler import CurrentAttributes
 from macaw.core.interaction_handler.msg import Message
 from macaw.core.interaction_handler.user_requests_db import InteractionDB

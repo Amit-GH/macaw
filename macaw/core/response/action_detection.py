@@ -6,7 +6,7 @@ Authors: Hamed Zamani (hazamani@microsoft.com)
 
 import multiprocessing
 
-from macaw.core.input_handler import actions
+from macaw.core.response import actions
 
 
 class PreActionRequestDispatcher:
