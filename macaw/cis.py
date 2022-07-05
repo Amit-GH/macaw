@@ -46,7 +46,7 @@ class CIS(ABC):
         self.request_dispatcher = RequestDispatcher(self.params)
         self.output_selection = naive_output_selection.NaiveOutputProcessing({})
         self.dialogue_manager = DialogManager()
-        self.nlp_pipeline = NlpPipeline(params.get('nlp_modules', {}))
+        self.nlp_pipeline = NlpPipeline(params.get("nlp_modules", {}))
 
         try:
             self.nlp_util = util.NLPUtil(self.params)

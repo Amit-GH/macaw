@@ -134,9 +134,9 @@ the directory containing the data.
 
 ```commandline
 docker build -t macaw . && docker run --rm -i --name=macaw_test_container \
--v /Users/amitgh/PycharmProjects/DrQA/data:/usr/src/app/DrQA/data \
+-v <path/to/DrQA/data>:/usr/src/app/DrQA/data \
 -v $("pwd")/stanford-corenlp-full-2017-06-09:/usr/src/app/stanford-corenlp-full-2017-06-09 \
--v /Users/amitgh/PycharmProjects/Maruna/macaw/data:/usr/src/app/data \
+-v $("pwd")/data:/usr/src/app/data \
 macaw
 ```
 
